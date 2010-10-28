@@ -99,10 +99,10 @@ float applyLighting(ProtonColor *color, ProtonScene *scene, Ray *ray, ProtonObje
 ProtonColor getImageColorFromRay(ProtonImage *image, Ray *ray) {
 	ProtonColor color;
 
-	float invl = 1.0f / sqrtf(ray->d.x * ray->d.x + ray->d.z * ray->d.z);
-        double r = ONE_OVER_PI * acosf(ray->d.y) * invl;
+	float invl = 1.0f / (0.00000001 + sqrtf(ray->d.x * ray->d.x + ray->d.y * ray->d.y));
+        double r = ONE_OVER_PI * acosf(ray->d.z) * invl;
         double u = ray->d.x * r;
-        double v = -ray->d.z * r;
+        double v = ray->d.y * r;
 
         /* Calculate pixel's coordinates in the image */
         int x = ((int) (u * image->width + image->height)) >> 1;
@@ -146,14 +146,13 @@ ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, 
 				Vector R = vsub(ray->d, vmulf(2.0f * vdot( ray->d,nor ), nor));
 				Ray refray = {iPos, R};			
 
-
 				// skylighting
 				int i;
 				ProtonColor lightColor;
 				setColor(&lightColor,0,0,0,0);
 				Ray ambRay = refray;
 						
-				float ambQuality = 50;
+				float ambQuality = 1000;
 
 				for(i=0; i < ambQuality; i++) {
 					ambRay.d.x = refray.d.x-1+(((float)rand()/(float)RAND_MAX) * 2);
@@ -172,7 +171,7 @@ ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, 
 					}
 					if(!didHit) {
 						if(scene->skyImage) {
-							ProtonColor skyColor = getImageColorFromRay(scene->skyImage, ray);
+							ProtonColor skyColor = getImageColorFromRay(scene->skyImage, &ambRay);
 							lightColor.r += skyColor.r/ambQuality;
 							lightColor.g += skyColor.g/ambQuality;
 							lightColor.b += skyColor.b/ambQuality;

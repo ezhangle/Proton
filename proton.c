@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 */
 
 	ProtonScene *scene = protonCreateScene();
-	setVector(&scene->camera->pos, 0,-1,-12);
+	setVector(&scene->camera->pos, 0,0,-12);
 
 	protonLoadSkyImage(scene, "beach_probe.hdr");
 
@@ -48,20 +48,20 @@ int main(int argc, char **argv) {
 	obj = protonAddSphere(scene, 2);
 	obj->pos.y = 1.5;
 	obj->pos.x = 0;
-	setColor(&obj->material.diffuseColor, 1, 0.4, 0.4, 0.5);
-	obj->material.reflectivity = 0.3;
+	setColor(&obj->material.diffuseColor, 1, 1, 1, 0.5);
+	//obj->material.reflectivity = 0.3;
 
 	obj = protonAddSphere(scene, 2);
 	obj->pos.y = -1.5;
 	obj->pos.x = -1.5;
-	setColor(&obj->material.diffuseColor, 0.4, 1, 0.4, 0.5);
-	obj->material.reflectivity = 0.3;
+	setColor(&obj->material.diffuseColor, 1, 1, 1, 0.5);
+	//obj->material.reflectivity = 0.3;
 
 	obj = protonAddSphere(scene, 2);
 	obj->pos.y = -1.5;
 	obj->pos.x = 1.5;
-	setColor(&obj->material.diffuseColor, 0.4, 0.4, 1, 0.5);
-	obj->material.reflectivity = 0.3;
+	setColor(&obj->material.diffuseColor, 1, 1, 1, 0.5);
+	//obj->material.reflectivity = 0.3;
 
 /*
 	obj = protonAddLight(scene, 0.5, 200);

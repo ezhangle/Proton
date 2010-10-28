@@ -32,3 +32,4 @@ void destroyBitmap(Bitmap bitmap);
 int writeBitmap(Bitmap bitmap, const char *fileName);
 void setPixelRGB(Bitmap bitmap, short x, short y, unsigned char r, unsigned char g, unsigned char b);
 void setPixel(Bitmap bitmap, short x, short y, ProtonColor color);
+void setPixelRGBf(Bitmap bitmap, short x, short y, float r, float g, float b);

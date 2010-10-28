@@ -1,6 +1,14 @@
 
 #include "protontypes.h"
 
+
+void setColorFromColor(ProtonColor *color, ProtonColor color2) {
+	color->r = color2.r;
+	color->g = color2.g;
+	color->b = color2.b;
+	color->a = color2.a;
+}
+
 void setColor(ProtonColor *color, float r, float g, float b, float a) {
 	color->r = r;
 	color->g = g;

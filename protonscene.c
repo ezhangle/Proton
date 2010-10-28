@@ -16,11 +16,33 @@ ProtonObject *createCamera() {
 	camera->fov = 45.0f;
 }
 
+void protonDestroyScene(ProtonScene *scene) {
+
+	if(scene->skyImage)
+		destroyImage(scene->skyImage);
+
+	free(scene);
+}
+
+int protonLoadSkyImage(ProtonScene *scene, const char *imageFile) {
+	ProtonImage*image = loadImage_HDR(imageFile);
+	if(!image)
+		return 0;
+
+	scene->skyImage = image;
+
+	return 1;
+}
+
+
 ProtonScene *protonCreateScene() {
 	ProtonScene *newScene = (ProtonScene*) malloc(sizeof(ProtonScene));
 	newScene->camera = createCamera();
 	newScene->numObjects = 0;
 	newScene->ambientLight = 0;
+
+	newScene->skyImage = NULL;
+
 	return newScene;
 }
 

@@ -1,6 +1,7 @@
 
 #include "protonrender.h"
 #include "protontypes.h"
+#include "protonimage.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "bmpwrite.h"
@@ -95,15 +96,32 @@ float applyLighting(ProtonColor *color, ProtonScene *scene, Ray *ray, ProtonObje
 	return 1;
 }
 
+ProtonColor getImageColorFromRay(ProtonImage *image, Ray *ray) {
+	ProtonColor color;
+
+	float invl = 1.0f / sqrtf(ray->d.x * ray->d.x + ray->d.z * ray->d.z);
+        double r = ONE_OVER_PI * acosf(ray->d.y) * invl;
+        double u = ray->d.x * r;
+        double v = -ray->d.z * r;
+
+        /* Calculate pixel's coordinates in the image */
+        int x = ((int) (u * image->width + image->height)) >> 1;
+        int y = ((int) (v * image->height + image->width)) >> 1;
+
+	return getImagePixel(image, x, y);
+}
+
 ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, int raydepth) {
 	float lastDist = 99999999;
 	ProtonColor finalColor;
-	float ambInt = 0.5;
+	float ambInt = scene->ambientLight;
 	
-	if(ray->d.y > 0) 
-		setColor(&finalColor, ambInt*0.8, ambInt*0.8, ambInt*0.8, 0);
-	else
+	if(scene->skyImage) {
+		scene->skyImage->exposure = ambInt;
+		setColorFromColor(&finalColor, getImageColorFromRay(scene->skyImage, ray));
+	} else {
 		setColor(&finalColor, ambInt, ambInt, ambInt, 0);
+	}
 
 	int objectHit = 0;			
 	int objn, lobjn;
@@ -132,8 +150,7 @@ ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, 
 				// skylighting
 				int i;
 				ProtonColor lightColor;
-				setColor(&lightColor, amb, amb, amb, 0);
-			
+				setColor(&lightColor,0,0,0,0);
 				Ray ambRay = refray;
 						
 				float ambQuality = 50;
@@ -154,14 +171,20 @@ ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, 
 						}
 					}
 					if(!didHit) {
-						lightColor.r += ambInt/ambQuality;
-						lightColor.g += ambInt/ambQuality;
-						lightColor.b += ambInt/ambQuality;
+						if(scene->skyImage) {
+							ProtonColor skyColor = getImageColorFromRay(scene->skyImage, ray);
+							lightColor.r += skyColor.r/ambQuality;
+							lightColor.g += skyColor.g/ambQuality;
+							lightColor.b += skyColor.b/ambQuality;
+						} else {
+							lightColor.r += ambInt/ambQuality;
+							lightColor.g += ambInt/ambQuality;
+							lightColor.b += ambInt/ambQuality;
+						}
 					}
 
 				}
 
-				colorClamp(&lightColor);
 
 				if(lightColor.r < 0)
 					lightColor.r = 0;

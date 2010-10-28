@@ -4,6 +4,7 @@
 
 #include "protonmath.h"
 #include "protontypes.h"
+#include "protonimage.h"
 
 #define TYPE_SPHERE 0
 #define TYPE_BOX 1
@@ -39,6 +40,9 @@ typedef struct {
 
 	ProtonObject *camera;
 
+	ProtonImage *skyImage;
+	
+
 } ProtonScene;
 
 ProtonObject *createObject();
@@ -48,5 +52,8 @@ ProtonScene *protonCreateScene();
 ProtonObject *protonAddSphere(ProtonScene *scene, float size);
 ProtonObject *protonAddLight(ProtonScene *scene, float brightness, float size);
 void protonAddObject(ProtonScene *scene, ProtonObject *object);
+
+int protonLoadSkyImage(ProtonScene *scene, const char *imageFile);
+void protonDestroyScene(ProtonScene *scene);
 
 #endif

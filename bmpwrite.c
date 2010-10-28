@@ -72,6 +72,10 @@ int writeBitmap(Bitmap bitmap, const char *fileName) {
 	return 1;	
 }
 
+void setPixelRGBf(Bitmap bitmap, short x, short y, float r, float g, float b) {
+	setPixelRGB(bitmap, x, y, (unsigned char)(255.0f*r),(unsigned char) (255.0f*g), (unsigned char)( 255.0f*b));
+}
+
 void setPixel(Bitmap bitmap, short x, short y, ProtonColor color) {
 	setPixelRGB(bitmap, x, y, (unsigned char)(255.0f*color.r),(unsigned char) (255.0f*color.g), (unsigned char)( 255.0f*color.b));
 }

@@ -14,6 +14,7 @@ ProtonObject *createCamera() {
 	ProtonObject *camera = createObject();
 	camera->type = TYPE_CAMERA;
 	camera->fov = 45.0f;
+	camera->exposure = 1;
 }
 
 void protonDestroyScene(ProtonScene *scene) {
@@ -31,6 +32,9 @@ int protonLoadSkyImage(ProtonScene *scene, const char *imageFile) {
 
 	scene->skyImage = image;
 
+	ProtonImage *diffuseImage = gaussianBlurImage(image, image->width/3, image->width/3);
+	scene->skyImageDiffuse = diffuseImage;
+
 	return 1;
 }
 
@@ -40,6 +44,8 @@ ProtonScene *protonCreateScene() {
 	newScene->camera = createCamera();
 	newScene->numObjects = 0;
 	newScene->ambientLight = 0;
+
+	newScene->showSky = 1;
 
 	newScene->skyImage = NULL;
 

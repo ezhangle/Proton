@@ -100,7 +100,7 @@ ProtonColor getImageColorFromRay(ProtonImage *image, Ray *ray) {
 	ProtonColor color;
 
 	float invl = 1.0f / (0.00000001 + sqrtf(ray->d.x * ray->d.x + ray->d.y * ray->d.y));
-        double r = ONE_OVER_PI * acosf(ray->d.z) * invl;
+        double r = ONE_OVER_PI * acosf(-ray->d.z) * invl;
         double u = ray->d.x * r;
         double v = ray->d.y * r;
 
@@ -117,8 +117,15 @@ ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, 
 	float ambInt = scene->ambientLight;
 	
 	if(scene->skyImage) {
-		scene->skyImage->exposure = ambInt;
-		setColorFromColor(&finalColor, getImageColorFromRay(scene->skyImage, ray));
+		if(raydepth ==  0) {
+			if(scene->showSky) {
+				setColorFromColor(&finalColor, getImageColorFromRay(scene->skyImage, ray));
+			} else {
+				setColorFromColor(&finalColor, scene->skyColor);
+			}
+		} else {
+			setColorFromColor(&finalColor, getImageColorFromRay(scene->skyImage, ray));
+		}
 	} else {
 		setColor(&finalColor, ambInt, ambInt, ambInt, 0);
 	}
@@ -151,13 +158,14 @@ ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, 
 				ProtonColor lightColor;
 				setColor(&lightColor,0,0,0,0);
 				Ray ambRay = refray;
-						
-				float ambQuality = 1000;
+				Ray norRay = {iPos, nor};
+	
+				float ambQuality = 60;
 
 				for(i=0; i < ambQuality; i++) {
-					ambRay.d.x = refray.d.x-1+(((float)rand()/(float)RAND_MAX) * 2);
-					ambRay.d.y = refray.d.y-1+(((float)rand()/(float)RAND_MAX) * 2);
-					ambRay.d.z = refray.d.z-1+(((float)rand()/(float)RAND_MAX) * 2);
+					ambRay.d.x = nor.x-1+(((float)rand()/(float)RAND_MAX) * 2);
+					ambRay.d.y = nor.y-1+(((float)rand()/(float)RAND_MAX) * 2);
+					ambRay.d.z = nor.z-1+(((float)rand()/(float)RAND_MAX) * 2);
 					vnormalize(&ambRay.d);	
 
 					float didHit = 0;
@@ -171,7 +179,7 @@ ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, 
 					}
 					if(!didHit) {
 						if(scene->skyImage) {
-							ProtonColor skyColor = getImageColorFromRay(scene->skyImage, &ambRay);
+							ProtonColor skyColor = getImageColorFromRay(scene->skyImageDiffuse, &norRay);
 							lightColor.r += skyColor.r/ambQuality;
 							lightColor.g += skyColor.g/ambQuality;
 							lightColor.b += skyColor.b/ambQuality;
@@ -220,7 +228,6 @@ ProtonColor launchRay(ProtonScene *scene, Ray *ray, ProtonObject *bounceObject, 
 		}
 		}
 	}		
-	colorClamp(&finalColor);
 	return finalColor;
 }
 
@@ -311,7 +318,11 @@ void protonRender(ProtonScene *scene, const char *fileName, int w, int h) {
 				aax += aaStep;
 			}
 
+			endColor.r *= scene->camera->exposure;
+			endColor.g *= scene->camera->exposure;
+			endColor.b *= scene->camera->exposure;
 
+			colorClamp(&endColor);
 			setPixel(bitmap, x, y, endColor);
 		}
 		}

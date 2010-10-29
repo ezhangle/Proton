@@ -6,8 +6,8 @@ int main(int argc, char **argv) {
 	printf("Proton raytracer v0.0\n");
 	
 /*
-	ProtonImage *image = loadImage_HDR("beach_probe.hdr");
-	image->exposure = 2;
+	ProtonImage *image1 = loadImage_HDR("beach_probe.hdr");
+	ProtonImage *image = gaussianBlurImage(image1, 200, 0);
 	if(image) {
 		Bitmap bmp = createBitmap(image->width, image->height);
 		
@@ -24,9 +24,10 @@ int main(int argc, char **argv) {
 		writeBitmap(bmp, "outimage.bmp");
 	}
 */
-
 	ProtonScene *scene = protonCreateScene();
 	setVector(&scene->camera->pos, 0,0,-12);
+	scene->showSky = 0;
+	setColor(&scene->skyColor, 0.3, 0.3, 0.3, 1);
 
 	protonLoadSkyImage(scene, "beach_probe.hdr");
 
@@ -49,19 +50,19 @@ int main(int argc, char **argv) {
 	obj->pos.y = 1.5;
 	obj->pos.x = 0;
 	setColor(&obj->material.diffuseColor, 1, 1, 1, 0.5);
-	//obj->material.reflectivity = 0.3;
+	obj->material.reflectivity = 0.3;
 
 	obj = protonAddSphere(scene, 2);
 	obj->pos.y = -1.5;
 	obj->pos.x = -1.5;
 	setColor(&obj->material.diffuseColor, 1, 1, 1, 0.5);
-	//obj->material.reflectivity = 0.3;
+	obj->material.reflectivity = 0.3;
 
 	obj = protonAddSphere(scene, 2);
 	obj->pos.y = -1.5;
 	obj->pos.x = 1.5;
 	setColor(&obj->material.diffuseColor, 1, 1, 1, 0.5);
-	//obj->material.reflectivity = 0.3;
+	obj->material.reflectivity = 0.3;
 
 /*
 	obj = protonAddLight(scene, 0.5, 200);

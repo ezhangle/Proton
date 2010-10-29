@@ -30,4 +30,8 @@ ProtonImage *loadImage_HDR(const char *fileName);
 ProtonColor getImagePixel(ProtonImage *image, int x, int y);
 void destroyImage(ProtonImage *image);
 
+ProtonImage *createImage(int width, int height, int format);
+
+ProtonImage *gaussianBlurImage(ProtonImage *image, float radius, float deviation);
+
 #endif

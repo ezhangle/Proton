@@ -28,6 +28,7 @@ typedef struct {
 	ProtonMaterial material;
 
 	float fov;
+	float exposure;
 
 } ProtonObject;
 
@@ -41,8 +42,11 @@ typedef struct {
 	ProtonObject *camera;
 
 	ProtonImage *skyImage;
-	
+	ProtonImage *skyImageDiffuse;
 
+	int showSky;
+	ProtonColor skyColor;
+	
 } ProtonScene;
 
 ProtonObject *createObject();

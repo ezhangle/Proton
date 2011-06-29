@@ -52,7 +52,6 @@ ProtonImage *loadImage_HDR(const char *fileName) {
 	image->dataFormat = FORMAT_HDR;
 	image->exposure = 1;
 
-
  	while ( fgets ( line, sizeof(line), file ) != NULL ) {
 		TokenArray ta = readTokens(line, "=");
 		if(strcmp(ta.tokens[0], "EXPOSURE") == 0) {
